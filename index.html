@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SafeZone Hub - Kenya</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <div class="sidebar">
+      <h1>🌍 SafeZone Hub - Kenya</h1>
+      <p>Real-time disaster alerts & safety resources • Nationwide</p>
+
+      <div id="risk-summary" class="risk-dashboard"></div>
+
+      <button onclick="getUserLocation()" class="location-btn">
+        📍 Enable Live Location Tracking (Anywhere in Kenya)
+      </button>
+
+      <form id="search-form">
+        <input type="text" id="search-input" placeholder="Search alerts (flood, drought, Mombasa, Kisumu...)" required>
+        <button type="submit">🔍 Search</button>
+      </form>
+
+      <button onclick="manualRefresh()" class="refresh-btn">🔄 Refresh Alerts</button>
+
+      <h2>Recent Alerts Near You</h2>
+      <div id="alert-feed">Loading alerts...</div>
+
+      <h2>☀️ Weather at Your Location</h2>
+      <div id="weather-panel">Enable location to see current weather</div>
+
+      <h2>📍 Nearby Resources</h2>
+      <div id="nearby-resources">Click the button above to see nearest hospitals, shelters & water points.</div>
+
+      <h2>🚨 Kenya Emergency Hotlines</h2>
+      <div class="hotlines">
+        <p><strong>999</strong> - Police Emergency</p>
+        <p><strong>112</strong> - General Emergency</p>
+        <p><strong>1199</strong> - Kenya Red Cross</p>
+        <p><strong>020 222 9653</strong> - NDOC</p>
+        <p><strong>0800 721 821</strong> - Health Hotline</p>
+      </div>
+
+      <button id="theme-toggle">Toggle Dark Mode</button>
+    </div>
+
+    <div class="map-container">
+      <div id="map"></div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

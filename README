@@ -1,0 +1,41 @@
+ 🌍 SafeZone Hub - Kenya
+
+A Real-Time Disaster Alert & Safety Resource Single Page Application**
+
+SafeZone Hub is a modern, user-friendly web application designed to help Kenyans stay safe during natural disasters and emergencies. It provides live disaster alerts, weather forecasts with rain warnings, nearest emergency resources, and important hotlines — all in one interactive dashboard.
+
+ Features
+
+- Live Location Tracking – Works anywhere in Kenya using browser geolocation
+- Interactive Map – Powered by Leaflet.js with disaster markers
+- Real-time Weather – Current conditions + 3-day rain forecast with weather alerts
+- Nearby Resources – Hospitals, shelters, and water points sorted by distance with county names
+- Disaster Alerts – Fetched from GDACS API, filtered for Kenya
+- Kenya Emergency Hotlines – Quick access to 999, 112, Kenya Red Cross, and more
+- Responsive Design – Clean UI with dark mode support
+- Auto-refresh – Updates alerts and weather every 6 minutes
+
+ Technologies Used
+
+- HTML5, CSS3 & JavaScript (Single Page Application)
+- Leaflet.js – Interactive mapping
+- GDACS API – Global disaster alerts
+- Open-Meteo API – Weather data and forecasts
+- Fetch API – For making asynchronous requests
+- Geolocation API – Live user location
+
+ How to Use
+
+1. Clone or download the project
+2. Open `index.html` in your browser (or use Live Server in VS Code)
+3. Click "Enable Live Location Tracking" to get personalized results
+4. Search for specific alerts using keywords like `flood`, `drought`, or `Nairobi`
+5. View nearest resources with distances and county names
+6. Check weather alerts and emergency hotlines
+
+ Project Structure
+safezone-hub/
+├── index.html
+├── styles.css
+├── app.js
+└── README.md
