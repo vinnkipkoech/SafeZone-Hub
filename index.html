@@ -4,51 +4,62 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SafeZone Hub - Kenya</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-  <div class="container">
-    <div class="sidebar">
-      <h1>🌍 SafeZone Hub - Kenya</h1>
-      <p>Real-time disaster alerts & safety resources • Nationwide</p>
+<body class="bg-gray-100 font-sans">
+  <div class="flex h-screen">
+    <!-- Sidebar -->
+    <div class="w-96 bg-white shadow-xl overflow-y-auto p-6">
+      <h1 class="text-3xl font-bold text-red-600 mb-1">SafeZone Hub</h1>
+      <p class="text-gray-600 mb-6">Real-time disaster alerts & safety resources • Kenya</p>
 
-      <div id="risk-summary" class="risk-dashboard"></div>
+      <div id="risk-summary" class="bg-green-50 p-4 rounded-xl mb-6"></div>
 
-      <button onclick="getUserLocation()" class="location-btn">
-        📍 Enable Live Location Tracking (Anywhere in Kenya)
+      <button onclick="getUserLocation()" 
+              class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-xl mb-4 transition">
+        📍 Enable Live Location Tracking
       </button>
 
-      <form id="search-form">
-        <input type="text" id="search-input" placeholder="Search alerts (flood, drought, Mombasa, Kisumu...)" required>
-        <button type="submit">🔍 Search</button>
+      <form id="search-form" class="mb-6">
+        <div class="flex gap-2">
+          <input type="text" id="search-input" 
+                 class="flex-1 border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-blue-500"
+                 placeholder="Search alerts (flood, drought...)">
+          <button type="submit" 
+                  class="bg-red-600 hover:bg-red-700 text-white px-6 rounded-xl font-medium">
+            🔍
+          </button>
+        </div>
       </form>
 
-      <button onclick="manualRefresh()" class="refresh-btn">🔄 Refresh Alerts</button>
+      <button onclick="manualRefresh()" 
+              class="w-full bg-red-600 hover:bg-red-700 text-white font-medium py-3 rounded-xl mb-8 transition">
+        🔄 Refresh Alerts
+      </button>
 
-      <h2>Recent Alerts Near You</h2>
-      <div id="alert-feed">Loading alerts...</div>
+      <h2 class="text-lg font-semibold mb-3">Recent Alerts Near You</h2>
+      <div id="alert-feed" class="mb-8"></div>
 
-      <h2>☀️ Weather at Your Location</h2>
-      <div id="weather-panel">Enable location to see current weather</div>
+      <h2 class="text-lg font-semibold mb-3">☀️ Weather & Alerts</h2>
+      <div id="weather-panel" class="bg-blue-50 p-5 rounded-2xl mb-8"></div>
 
-      <h2>📍 Nearby Resources</h2>
-      <div id="nearby-resources">Click the button above to see nearest hospitals, shelters & water points.</div>
+      <h2 class="text-lg font-semibold mb-3">📍 Nearby Resources</h2>
+      <div id="nearby-resources" class="mb-8"></div>
 
-      <h2>🚨 Kenya Emergency Hotlines</h2>
-      <div class="hotlines">
-        <p><strong>999</strong> - Police Emergency</p>
-        <p><strong>112</strong> - General Emergency</p>
-        <p><strong>1199</strong> - Kenya Red Cross</p>
-        <p><strong>020 222 9653</strong> - NDOC</p>
-        <p><strong>0800 721 821</strong> - Health Hotline</p>
+      <h2 class="text-lg font-semibold mb-3">🚨 Emergency Hotlines</h2>
+      <div class="bg-orange-50 p-5 rounded-2xl space-y-2 text-sm">
+        <p><strong class="text-red-600">999</strong> - Police</p>
+        <p><strong class="text-red-600">112</strong> - General Emergency</p>
+        <p><strong class="text-red-600">1199</strong> - Kenya Red Cross</p>
+        <p><strong class="text-red-600">020 222 9653</strong> - NDOC</p>
       </div>
-
-      <button id="theme-toggle">Toggle Dark Mode</button>
     </div>
 
-    <div class="map-container">
-      <div id="map"></div>
+    <!-- Map -->
+    <div class="flex-1 relative">
+      <div id="map" class="h-full w-full"></div>
     </div>
   </div>
 

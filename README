@@ -12,13 +12,14 @@ SafeZone Hub is a modern, user-friendly web application designed to help Kenyans
 - Nearby Resources – Hospitals, shelters, and water points sorted by distance with county names
 - Disaster Alerts – Fetched from GDACS API, filtered for Kenya
 - Kenya Emergency Hotlines – Quick access to 999, 112, Kenya Red Cross, and more
-- Responsive Design – Clean UI with dark mode support
+- Responsive Design – Clean UI 
 - Auto-refresh – Updates alerts and weather every 6 minutes
 
  Technologies Used
 
 - HTML5, CSS3 & JavaScript (Single Page Application)
 - Leaflet.js – Interactive mapping
+- Tailwind CSS - For modern styling
 - GDACS API – Global disaster alerts
 - Open-Meteo API – Weather data and forecasts
 - Fetch API – For making asynchronous requests
@@ -36,6 +37,5 @@ SafeZone Hub is a modern, user-friendly web application designed to help Kenyans
  Project Structure
 safezone-hub/
 ├── index.html
-├── styles.css
 ├── app.js
 └── README.md

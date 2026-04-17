@@ -1,5 +1,5 @@
 // SafeZone Hub - Kenya 
-let map = L.map('map').setView([-1.0, 37.0], 6); // Kenya centered
+let map = L.map('map').setView([-1.0, 37.0], 6);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
   attribution: '© OpenStreetMap | GDACS + Open-Meteo'
 }).addTo(map);
@@ -8,36 +8,21 @@ let markers = [];
 let userLat = null;
 let userLon = null;
 
-// Expanded Kenya-wide Resources with County Names
+// Kenya-wide Resources with County Names
 const kenyaResources = [
-  // Nairobi County
   { name: "Kenyatta National Hospital", type: "hospital", lat: -1.3017, lon: 36.8083, county: "Nairobi County" },
   { name: "Nairobi Hospital", type: "hospital", lat: -1.2921, lon: 36.8219, county: "Nairobi County" },
   { name: "Aga Khan University Hospital", type: "hospital", lat: -1.2605, lon: 36.8034, county: "Nairobi County" },
-  
-  // Mombasa County
   { name: "Coast General Teaching Hospital", type: "hospital", lat: -4.0435, lon: 39.6682, county: "Mombasa County" },
-  { name: "Mombasa County Referral Hospital", type: "hospital", lat: -4.0500, lon: 39.6700, county: "Mombasa County" },
-  
-  // Kisumu County
   { name: "Jaramogi Oginga Odinga Teaching Hospital", type: "hospital", lat: -0.1000, lon: 34.7500, county: "Kisumu County" },
-  
-  // Uasin Gishu County (Eldoret)
   { name: "Moi Teaching and Referral Hospital", type: "hospital", lat: 0.5200, lon: 35.2700, county: "Uasin Gishu County" },
-  
-  // Nakuru County
   { name: "Nakuru County Referral Hospital", type: "hospital", lat: -0.2800, lon: 36.0700, county: "Nakuru County" },
-  
-  // Kitui County
   { name: "Kitui County Referral Hospital", type: "hospital", lat: -1.3667, lon: 37.9833, county: "Kitui County" },
-  
-  // Shelters & Water Points
   { name: "Dandora Evacuation Shelter", type: "shelter", lat: -1.2500, lon: 36.9000, county: "Nairobi County" },
-  { name: "Kibera Community Water Point", type: "water", lat: -1.3120, lon: 36.7850, county: "Nairobi County" },
-  { name: "Mombasa Red Cross Shelter", type: "shelter", lat: -4.0600, lon: 39.6800, county: "Mombasa County" }
+  { name: "Kibera Community Water Point", type: "water", lat: -1.3120, lon: 36.7850, county: "Nairobi County" }
 ];
 
-// Calculate distance in km
+// Distance calculator
 function calculateDistance(lat1, lon1, lat2, lon2) {
   const R = 6371;
   const dLat = (lat2 - lat1) * Math.PI / 180;
@@ -53,13 +38,13 @@ function showUserOnMap() {
   map.flyTo([userLat, userLon], 9);
 }
 
-// Update nearby resources with county names
+// Update nearby resources
 function updateNearbyResources() {
   const div = document.getElementById('nearby-resources');
   div.innerHTML = '';
 
   if (!userLat || !userLon) {
-    div.innerHTML = `<p>Enable Live Location Tracking to see nearest resources in your county.</p>`;
+    div.innerHTML = `<p class="text-gray-500">Enable Live Location Tracking to see nearest resources in your area.</p>`;
     return;
   }
 
@@ -73,57 +58,91 @@ function updateNearbyResources() {
 
   sorted.forEach(r => {
     const card = document.createElement('div');
-    card.className = `resource-card ${r.type}`;
+    card.className = `resource-card p-4 bg-white rounded-2xl shadow-sm border border-gray-100 mb-3`;
     card.innerHTML = `
-      <strong>${r.name}</strong><br>
-      <small>${r.county} • ${r.type.toUpperCase()} • ${r.distance} km away</small>
+      <div class="font-semibold text-gray-800">${r.name}</div>
+      <div class="text-sm text-gray-600">${r.county}</div>
+      <div class="text-xs text-blue-600 mt-1">${r.type.toUpperCase()} • ${r.distance} km away</div>
     `;
     div.appendChild(card);
   });
 }
 
-// Enhanced Weather with Local Weather Alerts
+// Improved Weather with better rain logic
 async function fetchWeather() {
   if (!userLat || !userLon) return;
   
   const panel = document.getElementById('weather-panel');
-  panel.innerHTML = 'Loading weather & alerts...';
+  panel.innerHTML = `
+    <div class="animate-pulse flex space-x-4">
+      <div class="flex-1 space-y-3">
+        <div class="h-4 bg-gray-200 rounded w-3/4"></div>
+        <div class="h-4 bg-gray-200 rounded w-1/2"></div>
+      </div>
+    </div>`;
 
   try {
     const url = `https://api.open-meteo.com/v1/forecast?latitude=${userLat}&longitude=${userLon}&current=temperature_2m,relative_humidity_2m,rain,weather_code&daily=rain_sum,temperature_2m_max&timezone=Africa/Nairobi`;
     const res = await fetch(url);
     const data = await res.json();
 
-    const now = data.current;
-    const dailyRain = data.daily.rain_sum;
+    const current = data.current;
+    const daily = data.daily;
 
-    let alertMessage = '';
-    if (now.rain > 15) {
-      alertMessage = `<span style="color:#d32f2f; font-weight:bold;">⚠️ HEAVY RAIN ALERT - High Flood Risk in your area!</span>`;
-    } else if (now.rain > 5) {
-      alertMessage = `<span style="color:#f57c00; font-weight:bold;">🟠 Moderate Rain - Possible flooding in low areas</span>`;
-    } else if (dailyRain[0] > 10) {
-      alertMessage = `<span style="color:#f57c00;">🟠 Heavy rain expected tomorrow - Stay alert</span>`;
+    let rainStatus = '';
+    let rainClass = '';
+
+    if (current.rain > 15 || daily.rain_sum[0] > 20) {
+      rainStatus = "HEAVY RAIN ALERT - High Flood Risk";
+      rainClass = "text-red-600 font-bold";
+    } else if (current.rain > 5 || daily.rain_sum[0] > 10) {
+      rainStatus = "Moderate Rain - Possible flooding in low areas";
+      rainClass = "text-orange-600 font-medium";
     } else {
-      alertMessage = `<span style="color:#388e3c;">✅ No immediate weather alerts</span>`;
+      rainStatus = "No immediate rain alert";
+      rainClass = "text-green-600";
     }
 
-    let html = `
-      <strong>Current Weather:</strong> ${now.temperature_2m}°C | Humidity: ${now.relative_humidity_2m}% | Rain: ${now.rain}mm<br>
-      ${alertMessage}<br><br>
-      <strong>3-Day Rain Forecast:</strong><br>
-      Today: ${dailyRain[0]}mm | Tomorrow: ${dailyRain[1]}mm | Day 3: ${dailyRain[2]}mm
+    panel.innerHTML = `
+      <div class="space-y-4">
+        <div>
+          <div class="text-sm text-gray-500">Current Conditions</div>
+          <div class="text-3xl font-bold text-gray-800">${current.temperature_2m}°C</div>
+          <div class="text-sm">Humidity: ${current.relative_humidity_2m}% | Rain now: ${current.rain} mm</div>
+        </div>
+
+        <div class="${rainClass} text-sm font-medium">
+          ${rainStatus}
+        </div>
+
+        <div>
+          <div class="text-sm text-gray-500 mb-2">3-Day Rain Forecast</div>
+          <div class="grid grid-cols-3 gap-3 text-center">
+            <div class="bg-white p-3 rounded-xl">
+              <div class="text-xs text-gray-500">Today</div>
+              <div class="font-semibold">${daily.rain_sum[0]} mm</div>
+            </div>
+            <div class="bg-white p-3 rounded-xl">
+              <div class="text-xs text-gray-500">Tomorrow</div>
+              <div class="font-semibold">${daily.rain_sum[1]} mm</div>
+            </div>
+            <div class="bg-white p-3 rounded-xl">
+              <div class="text-xs text-gray-500">Day 3</div>
+              <div class="font-semibold">${daily.rain_sum[2]} mm</div>
+            </div>
+          </div>
+        </div>
+      </div>
     `;
-    panel.innerHTML = html;
   } catch (e) {
-    panel.innerHTML = "Weather data temporarily unavailable";
+    panel.innerHTML = `<p class="text-red-500">Weather data temporarily unavailable</p>`;
   }
 }
 
-// GDACS Alerts (Kenya-focused)
+// GDACS Alerts
 async function fetchGDACSAlerts(query = '') {
   const feed = document.getElementById('alert-feed');
-  feed.innerHTML = '🔄 Loading alerts across Kenya...';
+  feed.innerHTML = `<div class="text-gray-500">Loading alerts across Kenya...</div>`;
 
   try {
     const fromDate = new Date();
@@ -140,18 +159,15 @@ async function fetchGDACSAlerts(query = '') {
       const lat = event.geometry.coordinates[1];
       const lon = event.geometry.coordinates[0];
       const title = (event.properties?.title || '').toLowerCase();
-      const desc = (event.properties.description || '').toLowerCase();
-
-      const inKenyaArea = (lat >= -5 && lat <= 5 && lon >= 33 && lon <= 42);
-      const mentionsKenya = title.includes('kenya') || desc.includes('kenya');
-
-      return inKenyaArea || mentionsKenya;
+      return (lat >= -5 && lat <= 5 && lon >= 33 && lon <= 42) || title.includes('kenya');
     }) : [];
 
     if (events.length === 0) {
       feed.innerHTML = `
-        <p><strong>✅ No major active disasters across Kenya right now.</strong></p>
-        <p>Monitor local weather closely during rainy seasons.</p>`;
+        <div class="bg-green-50 p-5 rounded-2xl text-center">
+          <p class="font-medium text-green-700">No major active disasters across Kenya right now.</p>
+          <p class="text-sm text-gray-600 mt-2">Monitor weather closely during rainy seasons.</p>
+        </div>`;
     } else {
       renderAlerts(events);
       addMapMarkers(events);
@@ -160,7 +176,7 @@ async function fetchGDACSAlerts(query = '') {
     updateRiskSummary(events);
 
   } catch (err) {
-    feed.innerHTML = `<div id="error">Could not load alerts at the moment.</div>`;
+    feed.innerHTML = `<div class="text-red-500 p-4">Could not load alerts at the moment.</div>`;
   }
 }
 
@@ -171,11 +187,13 @@ function renderAlerts(events) {
     const props = event.properties || {};
     const level = (props.alertlevel || 'green').toLowerCase();
     const card = document.createElement('div');
-    card.className = `alert-card ${level}`;
+    card.className = `alert-card p-4 rounded-2xl mb-4 cursor-pointer transition-all ${level === 'red' ? 'bg-red-50 border-l-4 border-red-600' : level === 'orange' ? 'bg-orange-50 border-l-4 border-orange-500' : 'bg-green-50 border-l-4 border-green-600'}`;
     card.innerHTML = `
-      <strong>${props.title || 'Disaster Alert'}</strong><br>
-      <small>${level.toUpperCase()} Alert</small>
-      <p>${(props.description || '').substring(0, 140)}...</p>
+      <div class="font-semibold">${props.title || 'Disaster Alert'}</div>
+      <div class="text-xs uppercase tracking-widest mt-1 ${level === 'red' ? 'text-red-600' : level === 'orange' ? 'text-orange-600' : 'text-green-600'}">
+        ${level.toUpperCase()} ALERT
+      </div>
+      <p class="text-sm text-gray-700 mt-2 line-clamp-3">${(props.description || '').substring(0, 160)}...</p>
     `;
     card.addEventListener('click', () => {
       const [lon, lat] = event.geometry.coordinates;
@@ -192,7 +210,11 @@ function addMapMarkers(events) {
     const [lon, lat] = event.geometry.coordinates;
     const color = (event.properties.alertlevel || 'green') === 'red' ? '#d32f2f' : '#f57c00';
     L.circleMarker([lat, lon], {
-      radius: 8, fillColor: color, color: '#fff', weight: 2, fillOpacity: 0.85
+      radius: 8,
+      fillColor: color,
+      color: '#fff',
+      weight: 2,
+      fillOpacity: 0.85
     }).addTo(map).bindPopup(`<b>${event.properties.title}</b>`);
   });
 }
@@ -200,7 +222,18 @@ function addMapMarkers(events) {
 function updateRiskSummary(events) {
   const div = document.getElementById('risk-summary');
   const count = events ? events.length : 0;
-  div.innerHTML = `<strong>Current National Risk Level:</strong> LOW ✅<br><small>${count} alerts detected nationwide</small>`;
+  div.innerHTML = `
+    <div class="flex items-center justify-between">
+      <div>
+        <div class="text-sm text-gray-500">Current Risk Level</div>
+        <div class="text-2xl font-bold text-green-600">LOW</div>
+      </div>
+      <div class="text-right">
+        <div class="text-3xl font-bold text-gray-800">${count}</div>
+        <div class="text-xs text-gray-500">alerts detected</div>
+      </div>
+    </div>
+  `;
 }
 
 // Live Location
@@ -244,5 +277,5 @@ document.getElementById('search-form').addEventListener('submit', (e) => {
 });
 
 document.getElementById('theme-toggle').addEventListener('click', () => {
-  document.body.classList.toggle('dark-mode');
+  document.documentElement.classList.toggle('dark');
 });
